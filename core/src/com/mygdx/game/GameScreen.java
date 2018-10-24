@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -20,7 +21,7 @@ public class GameScreen implements Screen {
     private Texture snakeHead;
     private Rectangle snakeChunk;
     private Array<Rectangle> snakeParts;
-    private boolean isMovingUp = false, isMovingRight = false, isMovingDown = false, isMovingLeft = false;
+    private boolean isMovingUp = false, isMovingRight = true, isMovingDown = false, isMovingLeft = false;
     private float rotation = 0;
     private long lastDrawedFrameTime = 0;
 
@@ -47,6 +48,9 @@ public class GameScreen implements Screen {
 
         snakeParts.add(snakeHeadChunk, snakeTailChunk, snakeBodyChunk);
 
+        snakeParts.get(0).x = 800/2;
+        snakeParts.get(0).y = 480/2;
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
     }
@@ -67,28 +71,28 @@ public class GameScreen implements Screen {
     private float modifySnakeChunkX(SnakePart whichPart, int j){
         switch(whichPart) {
             case SNAKEHEAD:
-                if(isMovingRight && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 40000000) {
+                if(isMovingRight && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 30000000) {
                     lastDrawedFrameTime = TimeUtils.nanoTime();
-                    return snakeChunk.x += 100 * Gdx.graphics.getDeltaTime();
-                }else if(isMovingLeft && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 40000000) {
+                    return snakeParts.get(0).x += 100 * Gdx.graphics.getDeltaTime();
+                }else if(isMovingLeft && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 30000000) {
                     lastDrawedFrameTime = TimeUtils.nanoTime();
-                    return snakeChunk.x -= 100 * Gdx.graphics.getDeltaTime();
+                    return snakeParts.get(0).x -= 100 * Gdx.graphics.getDeltaTime();
                 }else
-                    return snakeChunk.x;
+                    return snakeParts.get(0).x;
             case SNAKETAIL:
                 if (rotation == 0)
-                    return snakeChunk.x - (75 * (snakeParts.size - 1));
+                    return snakeParts.get(1).x -= (75 * (snakeParts.size - 1));
                 else if(rotation == 180)
-                    return snakeChunk.x + (75 * (snakeParts.size - 1));
+                    return snakeParts.get(1).x += (75 * (snakeParts.size - 1));
                 else
-                    return snakeChunk.x;
+                    return snakeParts.get(1).x;
             case SNAKEBODY:
             if (rotation == 0)
-                return snakeChunk.x - (75 * (j - 1));
+                return snakeParts.get(j).x -= (75 * (j - 1));
             else if(rotation == 180)
-                return snakeChunk.x + (75 * (j - 1));
+                return snakeParts.get(j).x += (75 * (j - 1));
             else
-                return snakeChunk.x;
+                return snakeParts.get(j).x;
         }
         return 0;
     }
@@ -96,10 +100,10 @@ public class GameScreen implements Screen {
     private float modifySnakeChunkY(SnakePart whichPart, int j){
         switch(whichPart) {
             case SNAKEHEAD:
-                if(isMovingUp && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 40000000){
+                if(isMovingUp && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 30000000){
                     lastDrawedFrameTime = TimeUtils.nanoTime();
                     return snakeChunk.y += 100 * Gdx.graphics.getDeltaTime();
-                }else if(isMovingDown && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 40000000) {
+                }else if(isMovingDown && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 30000000) {
                     lastDrawedFrameTime = TimeUtils.nanoTime();
                     return snakeChunk.y -= 100 * Gdx.graphics.getDeltaTime();
                 }else{
@@ -141,6 +145,36 @@ public class GameScreen implements Screen {
         //game.font.draw(game.batch, ); // <-- draw some text on screen
         drawEverySnakePart();
         game.batch.end();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && isMovingRight == false) {
+            isMovingUp = false;
+            isMovingRight = false;
+            isMovingDown = false;
+            isMovingLeft = true;
+            rotation = 180;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && isMovingLeft == false){
+            isMovingUp = false;
+            isMovingRight = true;
+            isMovingDown = false;
+            isMovingLeft = false;
+            rotation = 0;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && isMovingDown == false){
+            isMovingUp = true;
+            isMovingRight = false;
+            isMovingDown = false;
+            isMovingLeft = false;
+            rotation = 90;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && isMovingUp == false){
+            isMovingUp = false;
+            isMovingRight = false;
+            isMovingDown = true;
+            isMovingLeft = false;
+            rotation = 270;
+        }
+
     }
 
     @Override
