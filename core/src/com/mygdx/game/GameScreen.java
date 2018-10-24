@@ -19,6 +19,8 @@ public class GameScreen implements Screen {
     private Texture snakeHead;
     private Rectangle snakeChunk;
     private Array<Rectangle> snakeParts;
+    private boolean isMovingUp = false, isMovingRight = true;
+    private float modifiedSnakeChunkX = 0, modifiedSnakeChunkY = 0;
 
     public GameScreen(final Learning game){
         this.game = game;
@@ -28,17 +30,18 @@ public class GameScreen implements Screen {
         snakeHead = new Texture(Gdx.files.internal("snakeHead.png"));
 
         snakeChunk = new Rectangle();
-        snakeChunk.x = 800/2 - 75/2;
-        snakeChunk.y = 480/2 - 45/2;
+        snakeChunk.x = 800/2;
+        snakeChunk.y = 480/2;
         snakeChunk.width = 75;
         snakeChunk.height = 45;
 
         Rectangle snakeHeadChunk = new Rectangle();
         Rectangle snakeTailChunk = new Rectangle();
+        Rectangle snakeBodyChunk = new Rectangle();
 
         snakeParts = new Array<Rectangle>();
 
-        snakeParts.add(snakeHeadChunk, snakeTailChunk);
+        snakeParts.add(snakeHeadChunk, snakeTailChunk, snakeBodyChunk);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -49,8 +52,12 @@ public class GameScreen implements Screen {
         snakeParts.add(newSnakePart);
     }
 
-    private void drawEverySnakePart(){
-
+    private void drawEverySnakePart(float rotation){
+        game.batch.draw(new TextureRegion(snakeHead), snakeChunk.x, snakeChunk.y,75/2, 45/2, 75, 45,1,1, rotation);
+        for(int i = 2; i < snakeParts.size; i++){
+            game.batch.draw(new TextureRegion(snakeBody), snakeChunk.x - (75 * (i - 1)), snakeChunk.y, 75/2, 45/2, 75, 45, 1, 1, rotation); // <-- draw only one thing per method
+        }
+        game.batch.draw(new TextureRegion(snakeTail), snakeChunk.x - (75 *(snakeParts.size - 1)), snakeChunk.y,75/2, 45/2, 75, 45,1,1,rotation);
     }
 
     @Override
@@ -68,7 +75,7 @@ public class GameScreen implements Screen {
         // begin drawing stuff on screen.
         game.batch.begin();
         //game.font.draw(game.batch, ); // <-- draw some text on screen
-        game.batch.draw(new TextureRegion(snakeHead), snakeChunk.x, snakeChunk.y, 75/2, 45/2, 75, 45, 1, 1, 0); // <-- draw only one thing per method
+        drawEverySnakePart(0);
         game.batch.end();
     }
 
@@ -78,6 +85,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
+        addNewSnakePart();
     }
 
     @Override
