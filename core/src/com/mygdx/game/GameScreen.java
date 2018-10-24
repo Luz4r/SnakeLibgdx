@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 
 public class GameScreen implements Screen {
@@ -19,8 +20,11 @@ public class GameScreen implements Screen {
     private Texture snakeHead;
     private Rectangle snakeChunk;
     private Array<Rectangle> snakeParts;
-    private boolean isMovingUp = false, isMovingRight = true;
-    private float modifiedSnakeChunkX = 0, modifiedSnakeChunkY = 0;
+    private boolean isMovingUp = false, isMovingRight = false, isMovingDown = false, isMovingLeft = false;
+    private float rotation = 0;
+    private long lastDrawedFrameTime = 0;
+
+    private enum SnakePart {SNAKEHEAD, SNAKETAIL, SNAKEBODY};
 
     public GameScreen(final Learning game){
         this.game = game;
@@ -52,13 +56,73 @@ public class GameScreen implements Screen {
         snakeParts.add(newSnakePart);
     }
 
-    private void drawEverySnakePart(float rotation){
-        game.batch.draw(new TextureRegion(snakeHead), snakeChunk.x, snakeChunk.y,75/2, 45/2, 75, 45,1,1, rotation);
+    private void drawEverySnakePart(){
+        game.batch.draw(new TextureRegion(snakeHead), modifySnakeChunkX(SnakePart.SNAKEHEAD, 1), modifySnakeChunkY(SnakePart.SNAKEHEAD, 1),75/2, 45/2, 75, 45,1,1, rotation);
         for(int i = 2; i < snakeParts.size; i++){
-            game.batch.draw(new TextureRegion(snakeBody), snakeChunk.x - (75 * (i - 1)), snakeChunk.y, 75/2, 45/2, 75, 45, 1, 1, rotation); // <-- draw only one thing per method
+            game.batch.draw(new TextureRegion(snakeBody), modifySnakeChunkX(SnakePart.SNAKEBODY, i), modifySnakeChunkY(SnakePart.SNAKEBODY, i), 75/2, 45/2, 75, 45, 1, 1, rotation); // <-- draw only one thing per method
         }
-        game.batch.draw(new TextureRegion(snakeTail), snakeChunk.x - (75 *(snakeParts.size - 1)), snakeChunk.y,75/2, 45/2, 75, 45,1,1,rotation);
+        game.batch.draw(new TextureRegion(snakeTail), modifySnakeChunkX(SnakePart.SNAKETAIL, 1), modifySnakeChunkY(SnakePart.SNAKETAIL, 1),75/2, 45/2, 75, 45,1,1,rotation);
     }
+
+    private float modifySnakeChunkX(SnakePart whichPart, int j){
+        switch(whichPart) {
+            case SNAKEHEAD:
+                if(isMovingRight && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 40000000) {
+                    lastDrawedFrameTime = TimeUtils.nanoTime();
+                    return snakeChunk.x += 100 * Gdx.graphics.getDeltaTime();
+                }else if(isMovingLeft && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 40000000) {
+                    lastDrawedFrameTime = TimeUtils.nanoTime();
+                    return snakeChunk.x -= 100 * Gdx.graphics.getDeltaTime();
+                }else
+                    return snakeChunk.x;
+            case SNAKETAIL:
+                if (rotation == 0)
+                    return snakeChunk.x - (75 * (snakeParts.size - 1));
+                else if(rotation == 180)
+                    return snakeChunk.x + (75 * (snakeParts.size - 1));
+                else
+                    return snakeChunk.x;
+            case SNAKEBODY:
+            if (rotation == 0)
+                return snakeChunk.x - (75 * (j - 1));
+            else if(rotation == 180)
+                return snakeChunk.x + (75 * (j - 1));
+            else
+                return snakeChunk.x;
+        }
+        return 0;
+    }
+
+    private float modifySnakeChunkY(SnakePart whichPart, int j){
+        switch(whichPart) {
+            case SNAKEHEAD:
+                if(isMovingUp && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 40000000){
+                    lastDrawedFrameTime = TimeUtils.nanoTime();
+                    return snakeChunk.y += 100 * Gdx.graphics.getDeltaTime();
+                }else if(isMovingDown && (TimeUtils.nanoTime() - lastDrawedFrameTime) > 40000000) {
+                    lastDrawedFrameTime = TimeUtils.nanoTime();
+                    return snakeChunk.y -= 100 * Gdx.graphics.getDeltaTime();
+                }else{
+                    return snakeChunk.y;
+                }
+            case SNAKETAIL:
+                if(rotation == 90)
+                    return snakeChunk.y - (75 *(snakeParts.size - 1));
+                else if(rotation == 270)
+                    return snakeChunk.y + (75 *(snakeParts.size - 1));
+                else
+                    return snakeChunk.y;
+            case SNAKEBODY:
+            if(rotation == 90)
+                return snakeChunk.y - (75 * (j - 1));
+            else if(rotation == 270)
+                return snakeChunk.y + (75 * (j - 1));
+            else
+                return snakeChunk.y;
+        }
+        return 0;
+    }
+
 
     @Override
     public void render(float delta){
@@ -75,7 +139,7 @@ public class GameScreen implements Screen {
         // begin drawing stuff on screen.
         game.batch.begin();
         //game.font.draw(game.batch, ); // <-- draw some text on screen
-        drawEverySnakePart(0);
+        drawEverySnakePart();
         game.batch.end();
     }
 
