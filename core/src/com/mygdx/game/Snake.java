@@ -11,7 +11,8 @@ class Snake {
     Texture snakeHead;
     Array<Rectangle> snakeParts;
 
-    Snake(){
+
+    Snake(int screenWidth, int screenHeight){
         snakeBody = new Texture(Gdx.files.internal("snakeBody.png"));
         snakeTail = new Texture(Gdx.files.internal("snakeTail.png"));
         snakeHead = new Texture(Gdx.files.internal("snakeHead.png"));
@@ -24,8 +25,8 @@ class Snake {
 
         snakeParts.add(snakeHeadChunk, snakeTailChunk, snakeBodyChunk);
 
-        snakeParts.get(0).x = 800/2F;
-        snakeParts.get(0).y = 480/2F;
+        snakeParts.get(0).x = screenWidth/2F;
+        snakeParts.get(0).y = screenHeight/2F;
 
         for(int i = 2; i < snakeParts.size; i++){
             if(i == 2){

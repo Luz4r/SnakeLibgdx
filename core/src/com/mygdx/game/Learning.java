@@ -6,8 +6,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Learning extends Game {
 
-	public SpriteBatch batch;
-	public BitmapFont font;
+	SpriteBatch batch;
+	private BitmapFont font;
+	int screenWidth,
+		screenHeight;
+
+	public Learning(int screenWidth, int screenHeight){
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
+	}
 
 	public void create() {
 		batch = new SpriteBatch();
