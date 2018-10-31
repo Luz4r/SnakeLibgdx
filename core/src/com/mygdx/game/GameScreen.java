@@ -21,7 +21,7 @@ public class GameScreen implements Screen {
     private float rotation = 0; // 0 >, 90 /\, 180 <, 270 \/
     private long timeSinceLastRenderX = 0, // x param
                  timeSinceLastRenderY = 0; // y param
-    private int speedOfSnake = 20; // how fast will SNAKE move on screen
+    private int speedOfSnake = 64; // how fast will SNAKE move on screen
 
     private enum SnakePart {SNAKEHEAD, SNAKETAIL, SNAKEBODY};
 
@@ -36,29 +36,39 @@ public class GameScreen implements Screen {
 
     private void drawEverySnakePart(){
         for(int i = 0; i < SNAKE.snakeParts.size; i++){
+            if((TimeUtils.nanoTime() - timeSinceLastRenderX) > 500000000) {
+                changeSnakeChunkX(i);
+                changeSnakeChunkY(i);
+            }
             if(i == 0)
-                GAME.batch.draw(new TextureRegion(SNAKE.snakeHead), changeSnakeChunkX(i), changeSnakeChunkY(i),64/2F, 64/2F, 64, 64,1,1, rotation);
+                GAME.batch.draw(new TextureRegion(SNAKE.snakeHead), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
             else if(i == 1)
-                GAME.batch.draw(new TextureRegion(SNAKE.snakeTail), changeSnakeChunkX(i), changeSnakeChunkY(i),64/2F, 64/2F, 64, 64,1,1, rotation);
+                GAME.batch.draw(new TextureRegion(SNAKE.snakeTail), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
             else
-                GAME.batch.draw(new TextureRegion(SNAKE.snakeBody), changeSnakeChunkX(i), changeSnakeChunkY(i)); // <-- draw only one thing per method
+                GAME.batch.draw(new TextureRegion(SNAKE.snakeBody), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y); // <-- draw only one thing per method
         }
     }
 
-    private float changeSnakeChunkX(int j){
-        if((TimeUtils.nanoTime() - timeSinceLastRenderX) > 300000000) {
-            if(j == SNAKE.snakeParts.size - 1)
-                timeSinceLastRenderX = TimeUtils.nanoTime();
+    private void changeSnakeChunkX(int j){
+        if(j == SNAKE.snakeParts.size - 1)
+            timeSinceLastRenderX = TimeUtils.nanoTime();
+        else if(j == 0){
+            if(isMovingRight)
+                SNAKE.snakeParts.get(j).x += speedOfSnake;
+            else if(isMovingLeft)
+                SNAKE.snakeParts.get(j).x += -speedOfSnake;
         }
-        return SNAKE.snakeParts.get(j).x;
     }
 
-    private float changeSnakeChunkY(int j){
-        if((TimeUtils.nanoTime() - timeSinceLastRenderY) > 300000000) {
-            if(j == SNAKE.snakeParts.size - 1)
-                timeSinceLastRenderY = TimeUtils.nanoTime();
+    private void changeSnakeChunkY(int j){
+        if(j == SNAKE.snakeParts.size - 1)
+            timeSinceLastRenderY = TimeUtils.nanoTime();
+        else if(j == 0){
+            if(isMovingUp)
+                SNAKE.snakeParts.get(j).y += speedOfSnake;
+            else if(isMovingDown)
+                SNAKE.snakeParts.get(j).y += -speedOfSnake;
         }
-        return SNAKE.snakeParts.get(j).y;
     }
 
     @Override
