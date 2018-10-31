@@ -37,8 +37,8 @@ public class GameScreen implements Screen {
     private void drawEverySnakePart(){
         for(int i = 0; i < SNAKE.snakeParts.size; i++){
             if((TimeUtils.nanoTime() - timeSinceLastRenderX) > 500000000) {
-                changeSnakeChunkX(i);
-                changeSnakeChunkY(i);
+                changeSnakeHeadX(i);
+                changeSnakeHeadY(i);
             }
             if(i == 0)
                 GAME.batch.draw(new TextureRegion(SNAKE.snakeHead), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
@@ -49,26 +49,24 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void changeSnakeChunkX(int j){
-        if(j == SNAKE.snakeParts.size - 1)
-            timeSinceLastRenderX = TimeUtils.nanoTime();
-        else if(j == 0){
-            if(isMovingRight)
+    private void changeSnakeHeadX(int j){
+        if(j == 0) {
+            if (isMovingRight)
                 SNAKE.snakeParts.get(j).x += speedOfSnake;
-            else if(isMovingLeft)
+            else if (isMovingLeft)
                 SNAKE.snakeParts.get(j).x += -speedOfSnake;
-        }
+        }else if(j == SNAKE.snakeParts.size - 1)
+                timeSinceLastRenderX = TimeUtils.nanoTime();
     }
 
-    private void changeSnakeChunkY(int j){
-        if(j == SNAKE.snakeParts.size - 1)
-            timeSinceLastRenderY = TimeUtils.nanoTime();
-        else if(j == 0){
+    private void changeSnakeHeadY(int j){
+        if(j == 0){
             if(isMovingUp)
                 SNAKE.snakeParts.get(j).y += speedOfSnake;
             else if(isMovingDown)
                 SNAKE.snakeParts.get(j).y += -speedOfSnake;
-        }
+        }else  if(j == SNAKE.snakeParts.size - 1)
+            timeSinceLastRenderY = TimeUtils.nanoTime();
     }
 
     @Override
