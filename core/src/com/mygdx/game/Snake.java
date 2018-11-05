@@ -33,7 +33,6 @@ class Snake {
     void addNewSnakePart(int howManySnakes){
         for(int  i = 0; i < howManySnakes; i++) {
             snakeParts.add(new Rectangle());
-            
         }
     }
 
