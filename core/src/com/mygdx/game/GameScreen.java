@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 
 
@@ -15,15 +16,12 @@ public class GameScreen implements Screen {
     private final Learning GAME;
     private OrthographicCamera camera;
     private boolean isMovingUp = false,
-            isMovingRight = false,
+            isMovingRight = true,
             isMovingDown = false,
             isMovingLeft = false;
     private float rotation = 0; // 0 >, 90 /\, 180 <, 270 \/
-    private long timeSinceLastRenderX = 0, // x param
-                 timeSinceLastRenderY = 0; // y param
+    private long timeSinceLastRender = 0;
     private int speedOfSnake = 64; // how fast will SNAKE move on screen
-
-    private enum SnakePart {SNAKEHEAD, SNAKETAIL, SNAKEBODY};
 
     GameScreen(final Learning game){
         this.GAME = game;
@@ -35,38 +33,33 @@ public class GameScreen implements Screen {
     }
 
     private void drawEverySnakePart(){
-        for(int i = 0; i < SNAKE.snakeParts.size; i++){
-            if((TimeUtils.nanoTime() - timeSinceLastRenderX) > 500000000) {
-                changeSnakeHeadX(i);
-                changeSnakeHeadY(i);
+            if((TimeUtils.nanoTime() - timeSinceLastRender) > 1000000000) {
+                for(int i = SNAKE.snakeParts.size - 1; i > 0; i--){
+                    SNAKE.snakeParts.get(i).x = SNAKE.snakeParts.get(i - 1).x;
+                    SNAKE.snakeParts.get(i).y = SNAKE.snakeParts.get(i - 1).y;
+                }
+                updateSnakeHead();
+                timeSinceLastRender = TimeUtils.nanoTime();
             }
+        for(int i = 0; i < SNAKE.snakeParts.size; i++){
             if(i == 0)
                 GAME.batch.draw(new TextureRegion(SNAKE.snakeHead), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
-            else if(i == 1)
+            else if(i == SNAKE.snakeParts.size - 1)
                 GAME.batch.draw(new TextureRegion(SNAKE.snakeTail), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
             else
                 GAME.batch.draw(new TextureRegion(SNAKE.snakeBody), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y); // <-- draw only one thing per method
         }
     }
 
-    private void changeSnakeHeadX(int j){
-        if(j == 0) {
-            if (isMovingRight)
-                SNAKE.snakeParts.get(j).x += speedOfSnake;
-            else if (isMovingLeft)
-                SNAKE.snakeParts.get(j).x += -speedOfSnake;
-        }else if(j == SNAKE.snakeParts.size - 1)
-                timeSinceLastRenderX = TimeUtils.nanoTime();
-    }
-
-    private void changeSnakeHeadY(int j){
-        if(j == 0){
-            if(isMovingUp)
-                SNAKE.snakeParts.get(j).y += speedOfSnake;
-            else if(isMovingDown)
-                SNAKE.snakeParts.get(j).y += -speedOfSnake;
-        }else  if(j == SNAKE.snakeParts.size - 1)
-            timeSinceLastRenderY = TimeUtils.nanoTime();
+    private void updateSnakeHead(){
+        if (isMovingRight)
+            SNAKE.snakeParts.get(0).x += speedOfSnake;
+        else if (isMovingLeft)
+            SNAKE.snakeParts.get(0).x += -speedOfSnake;
+        else if (isMovingUp)
+            SNAKE.snakeParts.get(0).y += speedOfSnake;
+        else if (isMovingDown)
+            SNAKE.snakeParts.get(0).y += -speedOfSnake;
     }
 
     @Override
