@@ -10,11 +10,11 @@ public class FailScreen implements Screen {
 
     private Learning game;
     private OrthographicCamera camera;
+    private int howManyApples = 0;
 
-    private String failMessage = "You Failed";
-
-    FailScreen(Learning game){
+    FailScreen(Learning game, int howManyApples){
         this.game = game;
+        this.howManyApples = howManyApples;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, this.game.screenWidth, this.game.screenHeight);
@@ -22,6 +22,9 @@ public class FailScreen implements Screen {
 
     @Override
     public void render(float delta){
+        String failMessage = "You Failed";
+        String score = "You Have ate " + howManyApples + " apples";
+
         Gdx.gl.glClearColor(0, 0, 150, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -34,7 +37,9 @@ public class FailScreen implements Screen {
 
         game.batch.begin();
         game.font.setColor(Color.RED);
-        game.font.draw(game.batch, failMessage, game.screenWidth/2F - failMessage.length(), game.screenHeight/2F - failMessage.length());
+        game.font.draw(game.batch, failMessage, game.screenWidth/2F - 50, game.screenHeight/2F);
+        game.font.setColor(Color.GOLD);
+        game.font.draw(game.batch, score, game.screenWidth/2F - 90, game.screenHeight/2F - 20);
         game.batch.end();
     }
 

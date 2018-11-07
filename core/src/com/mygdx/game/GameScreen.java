@@ -21,6 +21,7 @@ public class GameScreen implements Screen {
             isMovingLeft = false;
     private int rotation = 0; // 0 >, 90 /\, 180 <, 270 \/
     private long timeSinceLastSnakeRender = 0;
+    private int howManyApples = 0;
 
     GameScreen(Learning game){
         this.game = game;
@@ -86,14 +87,15 @@ public class GameScreen implements Screen {
 
         updateSnake();
         appleHandler.spawnApple();
-        appleHandler.checkIfSnakeOverlaps(snake, rotation);
+        if(appleHandler.hasSnakeAteApple(snake, rotation))
+            howManyApples++;
 
         if(snake.hasSnakeDied())
-            this.game.setScreen(new FailScreen(this.game));
+            this.game.setScreen(new FailScreen(this.game, howManyApples));
 
         // begin drawing stuff on screen.
         game.batch.begin();
-        //game.font.draw(game.batch, ); // <-- draw some text on screen
+        game.font.draw(game.batch, "You have eaten " + howManyApples + " apples", 50, game.screenHeight - game.screenHeight/20F);// <-- draw some text on screen
         drawEverySnakePart();
         drawEveryApple();
         game.batch.end();

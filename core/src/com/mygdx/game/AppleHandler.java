@@ -50,17 +50,19 @@ class AppleHandler {
 		}
 	}
 
-	void checkIfSnakeOverlaps(Snake snake, int whichWay){
+	boolean hasSnakeAteApple(Snake snake, int whichWay){
 		try{
 			for(int i = 0; i < appleContainer.size; i++){
 				if(snakeParts.get(0).overlaps(appleContainer.get(i))){
 					appleContainer.removeIndex(i);
 					snake.addNewSnakePart(whichWay);
+					return true;
 				}
 			}
 		}catch(Exception e){
 			timeSinceLastAppleRender = 0;
 			spawnApple();
 		}
+		return  false;
     }
 }
