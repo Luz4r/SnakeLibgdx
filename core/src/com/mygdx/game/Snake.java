@@ -3,15 +3,18 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Queue;
+
+import java.sql.Struct;
 
 class Snake {
     Texture snakeBody;
     Texture snakeTail;
     Texture snakeHead;
     Array<Rectangle> snakeParts;
-
-
+    // TODO prevent snake from overlaping
     Snake(int screenWidth, int screenHeight){
         snakeBody = new Texture(Gdx.files.internal("snakeBody.png"));
         snakeTail = new Texture(Gdx.files.internal("snakeTail.png"));
@@ -34,10 +37,31 @@ class Snake {
         }
     }
 
-    void addNewSnakePart(int howManySnakes){
-        for(int  i = 0; i < howManySnakes; i++) {
-            snakeParts.add(new Rectangle());
-        }
-    }
+    void addNewSnakePart(int whichWay){
+        // TODO make spawning new chunks better
+        Rectangle newChunk = new Rectangle();
 
+        newChunk.width = 64;
+        newChunk.height = 64;
+        switch(whichWay){
+            case 0:
+                newChunk.x = snakeParts.get(snakeParts.size - 1).x - 64;
+                newChunk.y = snakeParts.get(snakeParts.size - 1).y;
+                break;
+            case 90:
+                newChunk.y = snakeParts.get(snakeParts.size - 1).y - 64;
+                newChunk.x = snakeParts.get(snakeParts.size - 1).x;
+                break;
+            case 180:
+                newChunk.x = snakeParts.get(snakeParts.size - 1).x + 64;
+                newChunk.y = snakeParts.get(snakeParts.size - 1).y;
+                break;
+            case 270:
+                newChunk.y = snakeParts.get(snakeParts.size - 1).y + 64;
+                newChunk.x = snakeParts.get(snakeParts.size - 1).x;
+                break;
+            default:
+        }
+        snakeParts.add(newChunk);
+    }
 }

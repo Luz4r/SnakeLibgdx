@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Learning extends Game {
 
 	SpriteBatch batch;
-	private BitmapFont font;
+	BitmapFont font;
 	int screenWidth,
 		screenHeight;
 
