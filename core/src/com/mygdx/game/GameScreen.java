@@ -50,7 +50,7 @@ public class GameScreen implements Screen {
 
     private void updateSnake(){
         if((TimeUtils.nanoTime() - timeSinceLastSnakeRender) > 500000000L) {
-            updateBodyParts();
+            snake.updateBodyParts();
             updateSnakeHead();
             timeSinceLastSnakeRender = TimeUtils.nanoTime();
         }
@@ -72,16 +72,9 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void updateBodyParts(){
-        for(int i = snake.snakeParts.size - 1; i > 0; i--){
-            snake.snakeParts.get(i).x = snake.snakeParts.get(i - 1).x;
-            snake.snakeParts.get(i).y = snake.snakeParts.get(i - 1).y;
-        }
-    }
-
     @Override
     public void render(float delta){
-        Gdx.gl.glClearColor(0, 0, 150, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // tell the camera to update its matrices.
@@ -95,6 +88,9 @@ public class GameScreen implements Screen {
         appleHandler.spawnApple();
         appleHandler.checkIfSnakeOverlaps(snake, rotation);
 
+        if(snake.hasSnakeDied())
+            this.game.setScreen(new FailScreen(this.game));
+
         // begin drawing stuff on screen.
         game.batch.begin();
         //game.font.draw(game.batch, ); // <-- draw some text on screen
@@ -102,6 +98,10 @@ public class GameScreen implements Screen {
         drawEveryApple();
         game.batch.end();
 
+        checkInput();
+    }
+
+    private void checkInput(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) && !isMovingRight) {
             isMovingUp = false;
             isMovingRight = false;
