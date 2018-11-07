@@ -6,60 +6,72 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 
 
 public class GameScreen implements Screen {
 
-    private final Snake SNAKE;
-    private final Learning GAME;
+    private Snake snake;
+    private Learning game;
+    private AppleHandler appleHandler;
     private OrthographicCamera camera;
     private boolean isMovingUp = false,
             isMovingRight = true,
             isMovingDown = false,
             isMovingLeft = false;
     private float rotation = 0; // 0 >, 90 /\, 180 <, 270 \/
-    private long timeSinceLastRender = 0;
-    private int speedOfSnake = 64; // how fast will SNAKE move on screen
+    private long timeSinceLastSnakeRender = 0;
+    private int speedOfSnake = 64; // how fast will snake move on screen
 
-    GameScreen(final Learning game){
-        this.GAME = game;
+    GameScreen(Learning game){
+        this.game = game;
 
-        SNAKE = new Snake(GAME.screenWidth, GAME.screenHeight);
+        snake = new Snake(this.game.screenWidth, this.game.screenHeight);
+
+        appleHandler = new AppleHandler(this.game.screenWidth, this.game.screenHeight);
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, GAME.screenWidth, GAME.screenHeight);
+        camera.setToOrtho(false, this.game.screenWidth, this.game.screenHeight);
+    }
+
+    private void drawEveryApple(){
+        for(int i = 0; i < appleHandler.appleContainer.size; i++){
+            game.batch.draw(new TextureRegion(appleHandler.appleTexture), appleHandler.appleContainer.get(i).x + 16, appleHandler.appleContainer.get(i).y + 16, 32/2F, 32/2F, 32, 32, 1, 1, 0);
+        }
     }
 
     private void drawEverySnakePart(){
-            if((TimeUtils.nanoTime() - timeSinceLastRender) > 1000000000) {
-                for(int i = SNAKE.snakeParts.size - 1; i > 0; i--){
-                    SNAKE.snakeParts.get(i).x = SNAKE.snakeParts.get(i - 1).x;
-                    SNAKE.snakeParts.get(i).y = SNAKE.snakeParts.get(i - 1).y;
-                }
+            if((TimeUtils.nanoTime() - timeSinceLastSnakeRender) > 1000000000L) {
+                updateBodyParts();
                 updateSnakeHead();
-                timeSinceLastRender = TimeUtils.nanoTime();
+                timeSinceLastSnakeRender = TimeUtils.nanoTime();
             }
-        for(int i = 0; i < SNAKE.snakeParts.size; i++){
+        for(int i = 0; i < snake.snakeParts.size; i++){
             if(i == 0)
-                GAME.batch.draw(new TextureRegion(SNAKE.snakeHead), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
-            else if(i == SNAKE.snakeParts.size - 1)
-                GAME.batch.draw(new TextureRegion(SNAKE.snakeTail), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
+                game.batch.draw(new TextureRegion(snake.snakeHead), snake.snakeParts.get(i).x, snake.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
+            else if(i == snake.snakeParts.size - 1)
+                game.batch.draw(new TextureRegion(snake.snakeTail), snake.snakeParts.get(i).x, snake.snakeParts.get(i).y,64/2F, 64/2F, 64, 64,1,1, rotation);
             else
-                GAME.batch.draw(new TextureRegion(SNAKE.snakeBody), SNAKE.snakeParts.get(i).x, SNAKE.snakeParts.get(i).y); // <-- draw only one thing per method
+                game.batch.draw(new TextureRegion(snake.snakeBody), snake.snakeParts.get(i).x, snake.snakeParts.get(i).y); // <-- draw only one thing per method
         }
     }
 
     private void updateSnakeHead(){
         if (isMovingRight)
-            SNAKE.snakeParts.get(0).x += speedOfSnake;
+            snake.snakeParts.get(0).x += speedOfSnake;
         else if (isMovingLeft)
-            SNAKE.snakeParts.get(0).x += -speedOfSnake;
+            snake.snakeParts.get(0).x += -speedOfSnake;
         else if (isMovingUp)
-            SNAKE.snakeParts.get(0).y += speedOfSnake;
+            snake.snakeParts.get(0).y += speedOfSnake;
         else if (isMovingDown)
-            SNAKE.snakeParts.get(0).y += -speedOfSnake;
+            snake.snakeParts.get(0).y += -speedOfSnake;
+    }
+
+    private void updateBodyParts(){
+        for(int i = snake.snakeParts.size - 1; i > 0; i--){
+            snake.snakeParts.get(i).x = snake.snakeParts.get(i - 1).x;
+            snake.snakeParts.get(i).y = snake.snakeParts.get(i - 1).y;
+        }
     }
 
     @Override
@@ -72,13 +84,18 @@ public class GameScreen implements Screen {
 
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
-        GAME.batch.setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);
 
         // begin drawing stuff on screen.
-        GAME.batch.begin();
-        //GAME.font.draw(GAME.batch, ); // <-- draw some text on screen
+        game.batch.begin();
+        //game.font.draw(game.batch, ); // <-- draw some text on screen
         drawEverySnakePart();
-        GAME.batch.end();
+        drawEveryApple();
+        game.batch.end();
+
+        appleHandler.spawnApple();
+
+        appleHandler.checkIfSnakeColapse(snake);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) && !isMovingRight) {
             isMovingUp = false;
@@ -117,7 +134,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        SNAKE.addNewSnakePart(2);
+        snake.addNewSnakePart(2);
     }
 
     @Override
@@ -134,8 +151,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        SNAKE.snakeHead.dispose();
-        SNAKE.snakeBody.dispose();
-        SNAKE.snakeTail.dispose();
+        snake.snakeHead.dispose();
+        snake.snakeBody.dispose();
+        snake.snakeTail.dispose();
     }
 }

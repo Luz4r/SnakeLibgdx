@@ -23,10 +23,14 @@ class Snake {
 
         snakeParts.get(0).x = screenWidth/2F;
         snakeParts.get(0).y = screenHeight/2F;
+        snakeParts.get(0).width = 64;
+        snakeParts.get(0).height = 64;
 
         for(int i = 1; i < snakeParts.size; i++){
             snakeParts.get(i).x = snakeParts.get(i - 1).x - 64;
             snakeParts.get(i).y = snakeParts.get(i - 1).y;
+            snakeParts.get(i).width = 64;
+            snakeParts.get(i).height = 64;
         }
     }
 
