@@ -11,7 +11,7 @@ import java.sql.Struct;
 
 class Snake {
     Texture snakeBody;
-    Texture snakeTail;
+    //Texture snakeTail;
     Texture snakeHead;
     Array<Rectangle> snakeParts;
     private int screenWidth,
@@ -19,7 +19,7 @@ class Snake {
 
     Snake(int screenWidth, int screenHeight){
         snakeBody = new Texture(Gdx.files.internal("snakeBody.png"));
-        snakeTail = new Texture(Gdx.files.internal("snakeTail.png"));
+        //snakeTail = new Texture(Gdx.files.internal("snakeTail.png"));
         snakeHead = new Texture(Gdx.files.internal("snakeHead.png"));
 
         this.screenWidth = screenWidth;
@@ -62,31 +62,13 @@ class Snake {
         return false;
     }
 
-    void addNewSnakePart(int whichWay){
-        // TODO make spawning new chunks better
+    void addNewSnakePart(){
         Rectangle newChunk = new Rectangle();
 
         newChunk.width = 64;
         newChunk.height = 64;
-        switch(whichWay){
-            case 0:
-                newChunk.x = snakeParts.get(snakeParts.size - 1).x - 64;
-                newChunk.y = snakeParts.get(snakeParts.size - 1).y;
-                break;
-            case 90:
-                newChunk.y = snakeParts.get(snakeParts.size - 1).y - 64;
-                newChunk.x = snakeParts.get(snakeParts.size - 1).x;
-                break;
-            case 180:
-                newChunk.x = snakeParts.get(snakeParts.size - 1).x + 64;
-                newChunk.y = snakeParts.get(snakeParts.size - 1).y;
-                break;
-            case 270:
-                newChunk.y = snakeParts.get(snakeParts.size - 1).y + 64;
-                newChunk.x = snakeParts.get(snakeParts.size - 1).x;
-                break;
-            default:
-        }
+        newChunk.x = snakeParts.get(snakeParts.size - 1).x;
+        newChunk.y = snakeParts.get(snakeParts.size - 1).y;
         snakeParts.add(newChunk);
     }
 }

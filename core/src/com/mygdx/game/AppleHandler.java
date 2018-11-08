@@ -49,13 +49,13 @@ class AppleHandler {
 			timeSinceLastAppleRender = TimeUtils.nanoTime();
 		}
 	}
-
-	boolean hasSnakeAteApple(Snake snake, int whichWay){
+	
+	boolean hasSnakeAteApple(Snake snake){
 		try{
 			for(int i = 0; i < appleContainer.size; i++){
 				if(snakeParts.get(0).overlaps(appleContainer.get(i))){
 					appleContainer.removeIndex(i);
-					snake.addNewSnakePart(whichWay);
+					snake.addNewSnakePart();
 					return true;
 				}
 			}

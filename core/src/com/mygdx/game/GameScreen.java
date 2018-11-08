@@ -87,7 +87,7 @@ public class GameScreen implements Screen {
 
         updateSnake();
         appleHandler.spawnApple();
-        if(appleHandler.hasSnakeAteApple(snake, rotation))
+        if(appleHandler.hasSnakeAteApple(snake))
             howManyApples++;
 
         if(snake.hasSnakeDied())
@@ -95,9 +95,9 @@ public class GameScreen implements Screen {
 
         // begin drawing stuff on screen.
         game.batch.begin();
-        game.font.draw(game.batch, "You have eaten " + howManyApples + " apples", 50, game.screenHeight - game.screenHeight/20F);// <-- draw some text on screen
         drawEverySnakePart();
         drawEveryApple();
+        game.font.draw(game.batch, "You have eaten " + howManyApples + " apples", 50, game.screenHeight - game.screenHeight/20F);// <-- draw some text on screen
         game.batch.end();
 
         checkInput();
@@ -154,7 +154,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         snake.snakeHead.dispose();
         snake.snakeBody.dispose();
-        snake.snakeTail.dispose();
+        //snake.snakeTail.dispose();
         appleHandler.appleTexture.dispose();
     }
 }
