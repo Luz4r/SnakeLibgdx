@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.snake.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,7 +15,7 @@ class AppleHandler {
 	private Array<Rectangle> snakeParts;
 
 	AppleHandler(int screenWidth, int screenHeight, Array<Rectangle> snakeParts){
-		appleTexture = new Texture(Gdx.files.internal("apple.png"));
+		appleTexture = new Texture(Gdx.files.internal("core\\assets\\apple.png"));
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 		this.snakeParts = snakeParts;

@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.snake.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,9 +18,9 @@ class Snake {
         screenHeight;
 
     Snake(int screenWidth, int screenHeight){
-        snakeBody = new Texture(Gdx.files.internal("snakeBody.png"));
+        snakeBody = new Texture(Gdx.files.internal("core\\assets\\snakeBody.png"));
         //snakeTail = new Texture(Gdx.files.internal("snakeTail.png"));
-        snakeHead = new Texture(Gdx.files.internal("snakeHead.png"));
+        snakeHead = new Texture(Gdx.files.internal("core\\assets\\snakeHead.png"));
 
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;

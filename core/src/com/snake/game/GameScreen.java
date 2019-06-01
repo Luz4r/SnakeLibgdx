@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.snake.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -97,7 +97,7 @@ public class GameScreen implements Screen {
         game.batch.begin();
         drawEverySnakePart();
         drawEveryApple();
-        game.font.draw(game.batch, "You have eaten " + howManyApples + " apples", 50, game.screenHeight - game.screenHeight/20F);// <-- draw some text on screen
+        game.font.draw(game.batch, "You have eaten " + howManyApples + " apples", 50, game.screenHeight - game.screenHeight / 20F);// <-- draw some text on screen
         game.batch.end();
 
         checkInput();
